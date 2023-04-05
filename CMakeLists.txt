@@ -18,8 +18,7 @@ endif()
 # --- Fetch llama.cpp ----------------------------------------------------------
 
 FetchContent_Declare(llama
-  GIT_REPOSITORY https://github.com/iacore/llama.cpp
-  GIT_TAG custom
+  GIT_REPOSITORY https://github.com/ggerganov/llama.cpp
 )
 
 FetchContent_GetProperties(llama)
@@ -39,6 +38,8 @@ add_executable(llama-tui
   src/main.cpp
   src/llm.cpp
   src/llm.hpp
+  ${llama_SOURCE_DIR}/examples/common.cpp
+  ${llama_SOURCE_DIR}/examples/common.h
 )
 set_property(TARGET llama-tui PROPERTY CXX_STANDARD_REQUIRED 20)
 target_include_directories(llama-tui PRIVATE src ${llama_SOURCE_DIR} ${llama_SOURCE_DIR}/examples)
