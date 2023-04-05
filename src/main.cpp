@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "ftxui/component/component.hpp"
+#include "ftxui/component/screen_interactive.hpp"
 #include "ftxui/dom/elements.hpp"
 #include "ftxui/screen/screen.hpp"
 #include "ftxui/screen/string.hpp"
@@ -7,33 +9,27 @@
 int main(void) {
   using namespace ftxui;
 
-  auto summary = [&] {
-    auto content = vbox({
-        hbox({text(L"- done:   "), text(L"3") | bold}) | color(Color::Green),
-        hbox({text(L"- active: "), text(L"2") | bold}) | color(Color::RedLight),
-        hbox({text(L"- queue:  "), text(L"9") | bold}) | color(Color::Red),
-    });
-    return window(text(L" Summary "), content);
-  };
+  std::string prompt;
+  Component input_prompt = TextArea(&prompt, {}) | size(HEIGHT, EQUAL, 10);
 
-  auto document =  //
-      vbox({
-          hbox({
-              summary(),
-              summary(),
-              summary() | flex,
-          }),
-          summary(),
-          summary(),
-      });
+  auto logical = Container::Vertical({
+      input_prompt,
+  });
 
-  // Limit the size of the document to 80 char.
-  document = document | size(WIDTH, LESS_THAN, 80);
+  auto renderer = Renderer(logical, [&] {
+    auto document =  //
+        vbox({
+            text("LLaMA tui") | center,
+            window(text("Prompt"), input_prompt->Render()),
+        });
 
-  auto screen = Screen::Create(Dimension::Full(), Dimension::Fit(document));
-  Render(screen, document);
+    // Limit the size of the document to 80 char.
+    document = document | size(WIDTH, LESS_THAN, 80);
+    return document;
+  });
 
-  std::cout << screen.ToString() << '\0' << std::endl;
+  auto screen = ScreenInteractive::TerminalOutput();
+  screen.Loop(renderer);
 
   return EXIT_SUCCESS;
 }

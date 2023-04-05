@@ -6,7 +6,7 @@ include(FetchContent)
 set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
 FetchContent_Declare(ftxui
   GIT_REPOSITORY https://github.com/ArthurSonzogni/ftxui
-  GIT_TAG v3.0.0
+  GIT_TAG textarea
 )
 
 FetchContent_GetProperties(ftxui)
@@ -35,12 +35,13 @@ project(ftxui-starter
 )
 
 add_executable(ftxui-starter src/main.cpp)
+set_property(TARGET ftxui-starter PROPERTY CXX_STANDARD_REQUIRED 20)
 target_include_directories(ftxui-starter PRIVATE src)
 
 target_link_libraries(ftxui-starter
   PRIVATE ftxui::screen
   PRIVATE ftxui::dom
-  PRIVATE ftxui::component # Not needed for this example.
+  PRIVATE ftxui::component
   PRIVATE ggml
   PRIVATE llama
 )
