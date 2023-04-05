@@ -15,10 +15,22 @@ if(NOT ftxui_POPULATED)
   add_subdirectory(${ftxui_SOURCE_DIR} ${ftxui_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
+# --- Fetch llama.cpp ----------------------------------------------------------
+
+FetchContent_Declare(llama
+  GIT_REPOSITORY https://github.com/ggerganov/llama.cpp
+)
+
+FetchContent_GetProperties(llama)
+if(NOT llama_POPULATED)
+  FetchContent_Populate(llama)
+  add_subdirectory(${llama_SOURCE_DIR} ${llama_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
+
 # ------------------------------------------------------------------------------
 
 project(ftxui-starter
-  LANGUAGES CXX
+  LANGUAGES C CXX
   VERSION 1.0.0
 )
 
@@ -29,6 +41,8 @@ target_link_libraries(ftxui-starter
   PRIVATE ftxui::screen
   PRIVATE ftxui::dom
   PRIVATE ftxui::component # Not needed for this example.
+  PRIVATE ggml
+  PRIVATE llama
 )
 
 if (EMSCRIPTEN) 
