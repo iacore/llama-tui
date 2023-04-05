@@ -18,7 +18,8 @@ endif()
 # --- Fetch llama.cpp ----------------------------------------------------------
 
 FetchContent_Declare(llama
-  GIT_REPOSITORY https://github.com/ggerganov/llama.cpp
+  GIT_REPOSITORY https://github.com/iacore/llama.cpp
+  GIT_TAG custom
 )
 
 FetchContent_GetProperties(llama)
@@ -29,16 +30,20 @@ endif()
 
 # ------------------------------------------------------------------------------
 
-project(ftxui-starter
+project(llama-tui
   LANGUAGES C CXX
   VERSION 1.0.0
 )
 
-add_executable(ftxui-starter src/main.cpp)
-set_property(TARGET ftxui-starter PROPERTY CXX_STANDARD_REQUIRED 20)
-target_include_directories(ftxui-starter PRIVATE src)
+add_executable(llama-tui
+  src/main.cpp
+  src/llm.cpp
+  src/llm.hpp
+)
+set_property(TARGET llama-tui PROPERTY CXX_STANDARD_REQUIRED 20)
+target_include_directories(llama-tui PRIVATE src ${llama_SOURCE_DIR} ${llama_SOURCE_DIR}/examples)
 
-target_link_libraries(ftxui-starter
+target_link_libraries(llama-tui
   PRIVATE ftxui::screen
   PRIVATE ftxui::dom
   PRIVATE ftxui::component

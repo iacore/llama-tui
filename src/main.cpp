@@ -6,7 +6,10 @@
 #include "ftxui/screen/screen.hpp"
 #include "ftxui/screen/string.hpp"
 
-int main(void) {
+#include "llm.hpp"
+
+int main(int argc, char** argv) {
+  auto params = ex::parse_params(argc, argv);
   using namespace ftxui;
 
   std::string prompt;
@@ -20,6 +23,7 @@ int main(void) {
     auto document =  //
         vbox({
             text("LLaMA tui") | center,
+            hflow({text("seed: " + std::to_string(params.seed))}),
             window(text("Prompt"), input_prompt->Render()),
         });
 
