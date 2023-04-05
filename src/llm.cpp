@@ -4,7 +4,7 @@ namespace ex {
 
 gpt_params parse_params(int argc, char** argv) {
   gpt_params params;
-  params.model = "models/llama-7B/ggml-model.bin";
+  params.model = "models/ggml-vicuna-13b-4bit.bin";
 
   if (!gpt_params_parse(argc, argv, params)) {
     exit(1);
@@ -32,31 +32,33 @@ gpt_params parse_params(int argc, char** argv) {
   return params;
 }
 
+llama_context* load_model(gpt_params params) {
+  llama_context* ctx;
+
+  // load the model
+
+  auto lparams = llama_context_default_params();
+
+  lparams.n_ctx = params.n_ctx;
+  lparams.n_parts = params.n_parts;
+  lparams.seed = params.seed;
+  lparams.f16_kv = params.memory_f16;
+  lparams.logits_all = params.perplexity;
+  lparams.use_mlock = params.use_mlock;
+  lparams.embedding = params.embedding;
+
+  return llama_init_from_file(params.model.c_str(), lparams);
+}
+
 static int main_example_embedding(int argc, char** argv) {
   auto params = parse_params(argc, argv);
   fprintf(stderr, "%s: seed = %d\n", __func__, params.seed);
 
-  llama_context* ctx;
-
-  // load the model
-  {
-    auto lparams = llama_context_default_params();
-
-    lparams.n_ctx = params.n_ctx;
-    lparams.n_parts = params.n_parts;
-    lparams.seed = params.seed;
-    lparams.f16_kv = params.memory_f16;
-    lparams.logits_all = params.perplexity;
-    lparams.use_mlock = params.use_mlock;
-    lparams.embedding = params.embedding;
-
-    ctx = llama_init_from_file(params.model.c_str(), lparams);
-
-    if (ctx == NULL) {
-      fprintf(stderr, "%s: error: failed to load model '%s'\n", __func__,
-              params.model.c_str());
-      return 1;
-    }
+  auto ctx = load_model(params);
+  if (ctx == NULL) {
+    fprintf(stderr, "%s: error: failed to load model '%s'\n", __func__,
+            params.model.c_str());
+    return 1;
   }
 
   // print system information
